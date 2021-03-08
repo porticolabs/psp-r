@@ -1,0 +1,5 @@
+{
+    /*"python.pythonPath": "/home/mcasatti/anaconda3/bin/python"*/
+    "python.terminal.activateEnvInCurrentTerminal": true,
+    "python.terminal.activateEnvironment": true
+}
