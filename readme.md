@@ -1,6 +1,7 @@
 # README.MD
 
 ## Environment Variables
+
 The API uses environment variables to configure itself. All variables has default values.
 
 ```python
@@ -16,10 +17,13 @@ The API uses environment variables to configure itself. All variables has defaul
 ## Endpoint
 
 The API publishes only one endpoint by now
-```
+
+```http
 POST /recommendation
 ```
+
 The body for this request is
+
 ```json
 {
     "tweet": {
@@ -32,6 +36,7 @@ The body for this request is
 ```
 
 Full HTTP Request
+
 ```http
 POST http://localhost:8000/recommendation HTTP/1.1
 
