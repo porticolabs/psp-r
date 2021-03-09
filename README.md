@@ -55,9 +55,10 @@ POST http://localhost:8000/recommendation HTTP/1.1
 
 The server generates the API documentation dinamically, on demand. The documentation is accesible by the URL
 
-```
+```http
 http://server/docs 
 or 
 http://server/redoc
 ```
+
 >Example: http://localhost:8000/docs
