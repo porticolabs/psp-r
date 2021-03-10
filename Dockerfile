@@ -50,6 +50,6 @@ RUN cd ${APP_DIR} \
  && . ./venv/bin/activate \
  && ${APP_DIR}/venv/bin/pip install --no-index --find-links=${WHEEL_DIR} -r requirements.txt
 
-EXPOSE 2480
+EXPOSE 8000
 
 ENTRYPOINT ["/entrypoint.sh"]

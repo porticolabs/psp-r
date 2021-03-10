@@ -1,0 +1,8 @@
+version: "3.9"
+services:
+  psp-r:
+    image: porticolabs/psp-r:main-latest
+    container_name: psp-r-local
+    environment:
+      LOG_LEVEL: "DEBUG"
+      PB_DB_HOST: "http://sibila.website"
