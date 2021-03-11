@@ -31,12 +31,14 @@ class LogEntry:
 class ErrorEntry:
     level : str = ""
     location : str = ""
+    module : str = ""
     errormsg : str = ""
     time : str = ""
     tweetID : str = ""
-    def __init__ (self, errormsg : str, level: str = "error", location : str = "", tweetID : str = ""):
+    def __init__ (self, errormsg : str, level: str = "error", location : str = "", module : str = "", tweetID : str = ""):
         self.level = level
         self.location = location
+        self.module = module
         self.errormsg = errormsg
         self.time = datetime.datetime.utcnow().isoformat() + 'Z'
         self.tweetID = str(tweetID)
@@ -60,7 +62,7 @@ class PSPLogger:
         linecache.checkcache(filename)
         line = linecache.getline(filename, lineno, f.f_globals)
         location = "FILE: {file} (line: {line})".format(file=filename,line=lineno)
-        return location, str(exc_obj)
+        return location, line.strip(), str(exc_obj)
 
     def debug(self, msg: str, tweetID: str="", tweet: Tweet=None, recommendation: str=""):
         logger = self.getLogger()
@@ -76,8 +78,8 @@ class PSPLogger:
         logger = self.getLogger()
         # Si no viene mensaje de error obtener los datos automaticamente
         if not errormsg:
-            location, error = self.getCurrentException()
+            location, module, error = self.getCurrentException()
             errormsg = error
-        logrecord = jsonable_encoder (ErrorEntry(errormsg=errormsg, level="error", location=location, tweetID=tweetID))
+        logrecord = jsonable_encoder (ErrorEntry(errormsg=errormsg, level="error", location=location, module=module, tweetID=tweetID))
         logger.error(logrecord)
         return logrecord
