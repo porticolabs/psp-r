@@ -5,6 +5,6 @@ POST http://localhost:8000/recommendation HTTP/1.1
         "ID":"754839457894237843587",
         "text": "Che @porticocba, que tal algo para leer? #quieroscifi",
         "user":"Lalo_Landa",
-        "request": ["movie"]
+        "request": ["nada"]
     }
 }

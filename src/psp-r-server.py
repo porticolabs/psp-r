@@ -3,12 +3,17 @@ Server Web que implementará la API de PSP.
 Por el momento es simplemente un sandbox para hacer algunas
 pruebas de las librerías de Python y otros conceptos.
 '''
+import asyncio
 import logging
+import signal
 import uvicorn
 import os
+import multiprocessing
 
+from multiprocessing import Process
 from fastapi import Body, FastAPI
 from fastapi.responses import JSONResponse
+from fastapi.encoders import jsonable_encoder
 from rich import inspect, print
 from dbmanager import DBManager
 from recommendator import Tweet, Recommendation, Recommendator
@@ -28,14 +33,22 @@ app = FastAPI()
 
 @app.post("/recommendation",response_class=JSONResponse)
 async def getRecommendation(tweet : Tweet = Body(..., embed=True)) -> Recommendation:
-    recomendator = Recommendator(db=db,tweet=tweet)
-    return recomendator.getRecommendation()
+    recommendator = Recommendator(db=db,tweet=tweet)
+    recommendation,statusCode = recommendator.getRecommendation()
+    response = JSONResponse(content=jsonable_encoder(recommendation),status_code=statusCode)
+    
+    return response
 
 def run(): 
     """
     This function to run configured uvicorn server.
     """
-    uvicorn.run("psp-r-server:app", host="0.0.0.0", port=int(os.getenv('PB_LISTENING_PORT',8000)), reload=True)
+    uvicorn.run("debug-server:app", 
+        host=os.getenv('PB_LISTENING_IP',"0.0.0.0"), 
+        port=int(os.getenv('PB_LISTENING_PORT',8000)), 
+        reload=True,
+        log_config = None
+        )
 
 def start():
     """
@@ -61,6 +74,9 @@ def stop():
         proc.join(0.25)
 
 if __name__ == "__main__":
+    # La siguiente linea la sugieren para poder depurar interactivamente desde vscode
+    # multiprocessing.set_start_method('spawn', True)
+    
     # to start the server call start function.
     start()
     
