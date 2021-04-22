@@ -64,7 +64,7 @@ class Recommendator:
             return full_text,mediaURL,HTTP_200_OK
         except Exception as e:
             logrecord = logger.error(tweetID=self.tweet.ID)
-            return {"location":logrecord["location"],"module":logrecord["module"],"error":logrecord["errormsg"]},"",HTTP_500_INTERNAL_SERVER_ERROR
+            return logrecord,"",HTTP_500_INTERNAL_SERVER_ERROR
 
     def getRecommendation(self):
         text,mediaURL,statusCode = self.buildRandomResponse()

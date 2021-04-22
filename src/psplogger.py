@@ -28,20 +28,22 @@ class LogEntry:
         else:
             self.tweetID = str(tweetID)
 
-class ErrorEntry:
-    level : str = ""
-    location : str = ""
-    module : str = ""
-    errormsg : str = ""
-    time : str = ""
-    tweetID : str = ""
-    def __init__ (self, errormsg : str, level: str = "error", location : str = "", module : str = "", tweetID : str = ""):
-        self.level = level
-        self.location = location
-        self.module = module
-        self.errormsg = errormsg
-        self.time = datetime.datetime.utcnow().isoformat() + 'Z'
-        self.tweetID = str(tweetID)
+class ErrorEntry(LogEntry):
+    # Campos específicos del Error (Exception)
+    #location : str = ""
+    #module : str = ""
+    #errormsg : str = ""
+
+    def __init__ (self, errormsg : str, location : str = "", module : str = "", tweetID : str = ""):
+        #self.location = location
+        #self.module = module
+        #self.errormsg = errormsg
+        #self.tweetID = str(tweetID)
+        super().__init__(
+            msg="location: {location}, module: {module}, errormsg: {errormsg}".format(location=location, module=module, errormsg=errormsg),
+            level="error",
+            tweetID=self.tweetID
+        )
 
 class PSPLogger:
     def getLogger(self):
@@ -80,6 +82,6 @@ class PSPLogger:
         if not errormsg:
             location, module, error = self.getCurrentException()
             errormsg = error
-        logrecord = jsonable_encoder (ErrorEntry(errormsg=errormsg, level="error", location=location, module=module, tweetID=tweetID))
+        logrecord = jsonable_encoder (ErrorEntry(errormsg=errormsg, location=location, module=module, tweetID=tweetID))
         logger.error(logrecord)
         return logrecord
