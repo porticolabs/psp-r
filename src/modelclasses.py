@@ -12,3 +12,6 @@ class Recommendation (BaseModel):
     originID : str
     text : str
     mediaURL : str
+    title : str
+    published : str
+    author : str
