@@ -35,24 +35,17 @@ class Recommendator:
             salute = salute.format(user=self.tweet.user)
             logger.debug(msg = "Getting random salute: "+salute, tweetID=self.tweet.ID)
             logger.debug(msg = "Getting random response message: "+message, tweetID=self.tweet.ID)
+            recomendation_item = None
             if req_type == "book":
-                book = self.db.getRandomBook()
-                # Reemplazar los tags por los contenidos
-                text = message.format(recommendation=book["title"],year=book["published"],author=book["author"])
-                mediaURL = book["mediaURL"]
-                logger.debug(msg = "Getting random BOOK: {book}".format(book=book), tweetID=self.tweet.ID)
+                recomendation_item = self.db.getRandomBook()
+                logger.debug(msg = "Getting random BOOK: {book}".format(book=recomendation_item), tweetID=self.tweet.ID)
             elif req_type == "movie":
-                movie = self.db.getRandomMovie()
-                # Reemplazar los tags por los contenidos
-                text = message.format(recommendation=movie["title"],year=movie["published"],author=movie["author"])
-                mediaURL = movie["mediaURL"]
-                logger.debug(msg = "Getting random MOVIE: {movie}".format(movie=movie), tweetID=self.tweet.ID)
+                recomendation_item = self.db.getRandomMovie()
+                
+                logger.debug(msg = "Getting random MOVIE: {movie}".format(movie=recomendation_item), tweetID=self.tweet.ID)
             elif req_type == "series":
-                serie = self.db.getRandomSerie()
-                # Reemplazar los tags por los contenidos
-                text = message.format(recommendation=serie["title"],year=serie["published"],author=serie["author"])
-                mediaURL = serie["mediaURL"]
-                logger.debug(msg = "Getting random SERIES: {serie}".format(serie=serie), tweetID=self.tweet.ID)
+                recomendation_item = self.db.getRandomSerie()
+                logger.debug(msg = "Getting random SERIES: {serie}".format(serie=recomendation_item), tweetID=self.tweet.ID)
             else: #categorias no preocesadas "comic","game","music","magazine","illustration","website","channel"
                 text = "Lo lamento {user}! Todavía estoy completando mi base de datos para poder recomendarte lo que me pedís.".format(user=self.tweet.user)
                 mediaURL = "https://media.giphy.com/media/euCJCm6hKzbMc/giphy.gif"
@@ -60,19 +53,24 @@ class Recommendator:
                 logger.debug(msg = "Returning default message: "+text, tweetID=self.tweet.ID)
                 return text,mediaURL,HTTP_204_NO_CONTENT
 
+            text = message.format(recommendation=recomendation_item["title"],year=recomendation_item["published"],author=recomendation_item["author"])
+            mediaURL = recomendation_item["mediaURL"]
             full_text = "{salute}, {text}".format(salute=salute,text=text)
-            return full_text,mediaURL,HTTP_200_OK
+            return full_text,mediaURL,recomendation_item,HTTP_200_OK
         except Exception as e:
             logrecord = logger.error(tweetID=self.tweet.ID)
-            return {"location":logrecord["location"],"module":logrecord["module"],"error":logrecord["errormsg"]},"",HTTP_500_INTERNAL_SERVER_ERROR
+            return {"location":logrecord["location"],"module":logrecord["module"],"error":logrecord["errormsg"]},"",None,HTTP_500_INTERNAL_SERVER_ERROR
 
     def getRecommendation(self):
-        text,mediaURL,statusCode = self.buildRandomResponse()
+        text,mediaURL,recomendation_item,statusCode = self.buildRandomResponse()
         if statusCode == HTTP_200_OK or statusCode == HTTP_204_NO_CONTENT:
             recomendation = Recommendation(
                 originID = self.tweet.ID, 
                 text = text, 
-                mediaURL = mediaURL
+                mediaURL = mediaURL,
+                title = recomendation_item["title"],
+                published = recomendation_item["published"],
+                author = recomendation_item["author"]
                 )
             logger.info(msg="Got a recommendation",tweet=self.tweet,recommendation=text)        
             return {"recommendation":recomendation},statusCode
